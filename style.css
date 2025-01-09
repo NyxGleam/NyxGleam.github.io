@@ -35,3 +35,29 @@ body {
     color: #f8f8f2;
   }
   
+  /* Firma */
+.signature {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+  }
+  
+  .signature .profile-pic {
+    width: 40px; /* Tamaño de la imagen */
+    height: 40px;
+    border-radius: 50%; /* Hacer la imagen redonda */
+    margin-right: 10px; /* Espaciado entre la imagen y el texto */
+  }
+  
+  .signature .name {
+    font-weight: bold;
+  }
+  
