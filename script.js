@@ -25,7 +25,11 @@ document.getElementById('processButton').addEventListener('click', () => {
             processedOutput = 'Unsupported file format.';
         }
 
+        // Actualizamos el contenido y la clase del código
+        output.className = 'language-lua'; // Asegura que Prism detecte el formato Lua
         output.textContent = processedOutput;
+
+        // Resalta el código
         Prism.highlightElement(output);
     };
 
@@ -79,7 +83,6 @@ function processVTT(content) {
     return result;
 }
 
-// Similar a processVTT, pero adaptado para SRT
 function processSRT(content) {
     const lines = content.split('\n');
     const regex = /(\d{2}:\d{2}:\d{2}),(\d{3}) --> (\d{2}:\d{2}:\d{2}),(\d{3})/;
@@ -107,7 +110,6 @@ function processSRT(content) {
     return result;
 }
 
-// Similar a processVTT, pero adaptado para ASS
 function processASS(content) {
     const lines = content.split('\n');
     const regex = /Dialogue: [^,]*,(\d{1,2}:\d{2}:\d{2}\.\d{2}),(\d{1,2}:\d{2}:\d{2}\.\d{2}),/;
