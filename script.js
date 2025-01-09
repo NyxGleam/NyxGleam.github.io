@@ -26,7 +26,7 @@ document.getElementById('processButton').addEventListener('click', () => {
         }
 
         // Actualizamos el contenido y la clase del código
-        output.className = 'language-lua'; // Asegura que Prism detecte el formato Lua
+        output.className = 'language-lua'; // Asegura que Prism lo detecte como Lua
         output.textContent = processedOutput;
 
         // Resalta el código
