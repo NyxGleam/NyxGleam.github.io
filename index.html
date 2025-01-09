@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtitle Processor</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Estilos para resaltado de sintaxis -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
 </head>
 <body>
   <h1>Subtitle Processor</h1>
@@ -12,7 +14,11 @@
     <input type="file" id="subtitleFile" accept=".vtt,.srt,.ass">
     <button type="button" id="processButton">Process</button>
   </form>
-  <pre id="output"></pre>
+  <div class="output-container">
+    <pre><code id="output" class="language-lua"></code></pre>
+  </div>
   <script src="script.js"></script>
+  <!-- Script para resaltado de sintaxis -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 </body>
 </html>
