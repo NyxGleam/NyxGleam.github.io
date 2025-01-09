@@ -33,8 +33,8 @@ document.getElementById('processButton').addEventListener('click', () => {
 });
 
 document.getElementById('copyButton').addEventListener('click', () => {
-    const output = document.getElementById('output').textContent;
-    navigator.clipboard.writeText(output)
+    const outputText = document.getElementById('output').textContent;
+    navigator.clipboard.writeText(outputText)
         .then(() => alert('Output copied to clipboard!'))
         .catch(err => console.error('Could not copy text: ', err));
 });
@@ -46,6 +46,10 @@ function timeToSeconds(time) {
 
 function escapeString(str) {
     return str.replace(/"/g, '\\"');
+}
+
+function cleanLineText(line) {
+    return line.replace(/200\)\}/g, '').trim(); // Elimina "200)}" de las líneas
 }
 
 function processVTT(content) {
@@ -63,7 +67,7 @@ function processVTT(content) {
 
             let subtitleText = '';
             while (lines[++i] && lines[i].trim() !== '') {
-                subtitleText += (subtitleText ? ' ' : '') + lines[i].trim();
+                subtitleText += (subtitleText ? ' ' : '') + cleanLineText(lines[i]);
             }
 
             result += `    createSubtitle("Line${subtitleNumber}", "${escapeString(subtitleText)}", ${startSeconds.toFixed(3)}, ${duration.toFixed(3)}, 0.02, 0.02)\n`;
@@ -75,6 +79,7 @@ function processVTT(content) {
     return result;
 }
 
+// Similar a processVTT, pero adaptado para SRT
 function processSRT(content) {
     const lines = content.split('\n');
     const regex = /(\d{2}:\d{2}:\d{2}),(\d{3}) --> (\d{2}:\d{2}:\d{2}),(\d{3})/;
@@ -90,7 +95,7 @@ function processSRT(content) {
 
             let subtitleText = '';
             while (lines[++i] && lines[i].trim() !== '') {
-                subtitleText += (subtitleText ? ' ' : '') + lines[i].trim();
+                subtitleText += (subtitleText ? ' ' : '') + cleanLineText(lines[i]);
             }
 
             result += `    createSubtitle("Line${subtitleNumber}", "${escapeString(subtitleText)}", ${startSeconds.toFixed(3)}, ${duration.toFixed(3)}, 0.02, 0.02)\n`;
@@ -102,6 +107,7 @@ function processSRT(content) {
     return result;
 }
 
+// Similar a processVTT, pero adaptado para ASS
 function processASS(content) {
     const lines = content.split('\n');
     const regex = /Dialogue: [^,]*,(\d{1,2}:\d{2}:\d{2}\.\d{2}),(\d{1,2}:\d{2}:\d{2}\.\d{2}),/;
@@ -118,6 +124,7 @@ function processASS(content) {
 
             let subtitleText = lines[i].substr(lines[i].lastIndexOf(',') + 1).trim();
             subtitleText = subtitleText.replace(cleanupRegex, '');
+            subtitleText = cleanLineText(subtitleText);
 
             result += `    createSubtitle("Line${subtitleNumber}", "${escapeString(subtitleText)}", ${startSeconds.toFixed(3)}, ${duration.toFixed(3)}, 0.02, 0.02)\n`;
             subtitleNumber++;
