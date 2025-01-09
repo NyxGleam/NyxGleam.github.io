@@ -1,7 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subtitle Processor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+  <h1>Subtitle Processor</h1>
+  <form>
+    <input type="file" id="subtitleFile" accept=".vtt,.srt,.ass">
+    <button type="button" id="processButton">Process</button>
+  </form>
+  <pre id="output"></pre>
+  <script src="script.js"></script>
 </body>
 </html>
