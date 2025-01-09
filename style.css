@@ -19,3 +19,14 @@ body {
     padding: 10px;
     border: 1px solid #ddd;
   }  
+
+  pre#output {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-family: monospace;
+    max-height: 300px;
+    overflow-y: auto; /* Scroll en caso de contenido largo */
+    white-space: pre-wrap; /* Para manejar saltos de línea */
+  }
+  
