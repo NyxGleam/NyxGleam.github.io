@@ -159,15 +159,22 @@ function createAnimatedText(text, container, animationSettings) {
         const char = text[i];
         const charElement = document.createElement('span');
 
-        charElement.textContent = char;
+        // Asignar contenido del carácter o un espacio con ancho definido
+        if (char === ' ') {
+            charElement.innerHTML = '&nbsp;'; // Espacio no separable
+            charElement.style.display = 'inline-block';
+        } else {
+            charElement.textContent = char;
+            charElement.style.display = 'inline-block';
+        }
+
         charElement.style.opacity = '0';
         charElement.style.color = animationSettings.textColor || '#fff'; // Establecer color
-        charElement.style.display = 'inline-block';
         charElement.style.transition = `opacity ${fadeDuration}s, transform ${fadeDuration}s`;
-        charElement.style.transform = `
-  translate(${Math.random() * (maxX - minX) + minX}px, ${Math.random() * (maxY - minY) + minY}px)
-  rotate(${Math.random() * (maxRotation - minRotation) + minRotation}deg)
-`;
+        charElement.style.transform = `translate(
+          ${Math.random() * (maxX - minX) + minX}px, 
+          ${Math.random() * (maxY - minY) + minY}px
+        ) rotate(${Math.random() * (maxRotation - minRotation) + minRotation}deg)`;
 
         container.appendChild(charElement);
 
@@ -182,12 +189,12 @@ function createAnimatedText(text, container, animationSettings) {
         // Animación de Fade-Out
         if (lifetime) {
             setTimeout(() => {
+                charElement.style.transition = `opacity ${fadeDuration}s ease-in, transform ${fadeDuration}s ease-in-out`;
                 charElement.style.opacity = '0';
-                charElement.style.transition = `opacity ${fadeDuration}s, transform ${fadeDuration}s`;
-                charElement.style.transform = `
-          translate(${Math.random() * (maxX - minX) + minX}px, ${Math.random() * (maxY - minY) + minY}px)
-          rotate(${Math.random() * (maxRotation - minRotation) + minRotation}deg)
-        `;
+                charElement.style.transform = `translate(
+                  ${Math.random() * (maxX - minX) + minX}px, 
+                  ${Math.random() * (maxY - minY) + minY}px
+                ) rotate(${Math.random() * (maxRotation - minRotation) + minRotation}deg)`;
                 charElement.style.fontSize = sizeStart;
 
                 setTimeout(() => charElement.remove(), fadeDuration * 1000);
