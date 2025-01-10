@@ -1,51 +1,139 @@
-document.getElementById('processButton').addEventListener('click', () => {
-    const fileInput = document.getElementById('subtitleFile');
-    const output = document.getElementById('output');
+let processedOutput = ''; // Contenido procesado del archivo de subtítulos
+let subtitles = []; // Subtítulos procesados
+let player; // Reproductor de YouTube
 
-    if (fileInput.files.length === 0) {
-        output.textContent = 'Please select a subtitle file.';
-        Prism.highlightElement(output);
-        return;
+// Procesar el archivo de subtítulos
+document.getElementById('processButton').addEventListener('click', () => {
+  const fileInput = document.getElementById('subtitleFile');
+  const output = document.getElementById('output');
+
+  if (fileInput.files.length === 0) {
+    output.textContent = 'Please select a subtitle file.';
+    Prism.highlightElement(output);
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function (event) {
+    const content = event.target.result;
+
+    if (file.name.endsWith('.vtt')) {
+      processedOutput = processVTT(content);
+    } else if (file.name.endsWith('.srt')) {
+      processedOutput = processSRT(content);
+    } else if (file.name.endsWith('.ass')) {
+      processedOutput = processASS(content);
+    } else if (file.name.endsWith('.ssa')) {
+      processedOutput = processSSA(content);
+    } else if (file.name.endsWith('.txt')) {
+      processedOutput = processTXT(content);
+    } else {
+      processedOutput = 'Unsupported file format.';
     }
 
-    const file = fileInput.files[0];
-    const reader = new FileReader();
+    // Mostrar el contenido procesado en pantalla
+    output.className = 'language-lua';
+    output.textContent = processedOutput;
+    Prism.highlightElement(output);
 
-    reader.onload = function (event) {
-        const content = event.target.result;
-        let processedOutput = '';
+    // Parsear subtítulos
+    subtitles = parseLuaSubtitles(processedOutput);
+    console.log('Subtitles loaded:', subtitles);
+  };
 
-        if (file.name.endsWith('.vtt')) {
-            processedOutput = processVTT(content);
-        } else if (file.name.endsWith('.srt')) {
-            processedOutput = processSRT(content);
-        } else if (file.name.endsWith('.ass')) {
-            processedOutput = processASS(content);
-        } else if (file.name.endsWith('.ssa')) {
-            processedOutput = processSSA(content);
-        } else if (file.name.endsWith('.txt')) {
-            processedOutput = processTXT(content);
-        } else {
-            processedOutput = 'Unsupported file format.';
-        }
-
-        // Actualizamos el contenido y la clase del código
-        output.className = 'language-lua'; // Asegura que Prism lo detecte como Lua
-        output.textContent = processedOutput;
-
-        // Resalta el código
-        Prism.highlightElement(output);
-    };
-
-    reader.readAsText(file);
+  reader.readAsText(file);
 });
 
+// Copiar contenido procesado al portapapeles
 document.getElementById('copyButton').addEventListener('click', () => {
-    const outputText = document.getElementById('output').textContent;
-    navigator.clipboard.writeText(outputText)
-        .then(() => alert('Output copied to clipboard!'))
-        .catch(err => console.error('Could not copy text: ', err));
+  const outputText = document.getElementById('output').textContent;
+  navigator.clipboard
+    .writeText(outputText)
+    .then(() => alert('Output copied to clipboard!'))
+    .catch((err) => console.error('Could not copy text:', err));
 });
+
+// Iniciar la previsualización
+document.getElementById('startPreview').addEventListener('click', () => {
+  if (!player || player.getPlayerState() !== YT.PlayerState.PLAYING) {
+    player.playVideo(); // Inicia el video si no está reproduciéndose
+  }
+  syncSubtitles();
+});
+
+// Cargar el video de YouTube
+document.getElementById('loadVideo').addEventListener('click', () => {
+  const youtubeLink = document.getElementById('youtubeLink').value.trim();
+  const videoId = extractVideoId(youtubeLink);
+
+  if (videoId) {
+    player.loadVideoById(videoId);
+    console.log(`Loaded video: ${videoId}`);
+  } else {
+    alert('Please enter a valid YouTube link.');
+  }
+});
+
+// Sincronizar subtítulos con el tiempo del video
+function syncSubtitles() {
+  const previewScreen = document.getElementById('preview-screen');
+  previewScreen.innerHTML = ''; // Limpia subtítulos previos
+
+  if (!subtitles || subtitles.length === 0) {
+    console.error('No subtitles available for sync.');
+    return;
+  }
+
+  subtitles.forEach((subtitle) => {
+    const startTime = subtitle.startTime * 1000; // Convertir a milisegundos
+    const duration = subtitle.duration * 1000;
+
+    setTimeout(() => {
+      const subtitleElement = document.createElement('span');
+      subtitleElement.classList.add('subtitle');
+      subtitleElement.textContent = subtitle.text;
+      subtitleElement.style.opacity = 1;
+      previewScreen.appendChild(subtitleElement);
+
+      setTimeout(() => {
+        subtitleElement.style.opacity = 0;
+        setTimeout(() => previewScreen.removeChild(subtitleElement), 500);
+      }, duration);
+    }, startTime);
+  });
+}
+
+// Función para extraer el ID del video de un enlace de YouTube
+function extractVideoId(link) {
+  const regex =
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = link.match(regex);
+  return match ? match[1] : null;
+}
+
+// Parsear subtítulos desde el código Lua generado
+function parseLuaSubtitles(luaCode) {
+  const subtitleRegex = /createSubtitle\("([^"]+)", "([^"]+)", ([^,]+), ([^,]+), ([^,]+), ([^,]+)\)/g;
+  const subtitles = [];
+  let match;
+
+  while ((match = subtitleRegex.exec(luaCode)) !== null) {
+    const [_, id, text, startTime, duration, charSpacing, fadeOutInterval] = match;
+    subtitles.push({
+      id,
+      text,
+      startTime: parseFloat(startTime),
+      duration: parseFloat(duration),
+      charSpacing: parseFloat(charSpacing),
+      fadeOutInterval: parseFloat(fadeOutInterval),
+    });
+  }
+
+  console.log('Parsed subtitles:', subtitles);
+  return subtitles;
+}
 
 function timeToSeconds(time) {
     const [h, m, s] = time.split(':');
@@ -185,67 +273,25 @@ function processTXT(content) {
     return result;
 }
 
-document.getElementById('startPreview').addEventListener('click', () => {
-    startPreview();
-});
-
-document.getElementById('startPreview').addEventListener('click', () => {
-    startPreview(processedOutput); // Usa los subtítulos generados
-});
-
-function parseLuaSubtitles(luaCode) {
-    const subtitleRegex = /createSubtitle\("([^"]+)", "([^"]+)", ([^,]+), ([^,]+), ([^,]+), ([^,]+)\)/g;
-    const subtitles = [];
-    let match;
-
-    while ((match = subtitleRegex.exec(luaCode)) !== null) {
-        const [_, id, text, startTime, duration, charSpacing, fadeOutInterval] = match;
-        subtitles.push({
-            id,
-            text,
-            startTime: parseFloat(startTime),
-            duration: parseFloat(duration),
-            charSpacing: parseFloat(charSpacing),
-            fadeOutInterval: parseFloat(fadeOutInterval),
-        });
-    }
-
-    return subtitles;
-}
-
-function startPreview(luaCode) {
-    const previewScreen = document.getElementById('preview-screen');
-    previewScreen.innerHTML = ''; // Limpia subtítulos anteriores
-
-    const subtitles = parseLuaSubtitles(luaCode);
-
-    subtitles.forEach((subtitle) => {
-        const subtitleElement = document.createElement('span');
-        subtitleElement.classList.add('subtitle');
-        subtitleElement.textContent = subtitle.text;
-
-        // Configuración inicial
-        subtitleElement.style.transform = `translate(0px, 0px) rotate(${Math.random() * 30 - 15}deg)`;
-        previewScreen.appendChild(subtitleElement);
-
-        // Aparecer subtítulo
-        setTimeout(() => {
-            subtitleElement.style.opacity = 1;
-            subtitleElement.style.transform = `translate(0px, 0px) rotate(0deg)`;
-        }, subtitle.startTime * 1000);
-
-        // Desaparecer subtítulo
-        setTimeout(() => {
-            subtitleElement.style.opacity = 0;
-            subtitleElement.style.transform = `translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 - 20}px) rotate(${Math.random() * 30 - 15}deg)`;
-        }, (subtitle.startTime + subtitle.duration) * 1000);
-
-        // Movimiento dinámico (Wavy)
-        if (subtitle.charSpacing > 0.01) {
-            setInterval(() => {
-                const offsetX = Math.sin(Date.now() / 200) * 10;
-                subtitleElement.style.transform = `translate(${offsetX}px, 0)`;
-            }, 50);
-        }
+// Cargar el reproductor de YouTube
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      height: '360',
+      width: '640',
+      videoId: '',
+      events: {
+        onReady: onPlayerReady,
+        onStateChange: onPlayerStateChange,
+      },
     });
-}
+  }
+  
+  function onPlayerReady(event) {
+    console.log('YouTube Player is ready.');
+  }
+  
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+      syncSubtitles();
+    }
+  }
