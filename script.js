@@ -184,3 +184,68 @@ function processTXT(content) {
     result += 'end';
     return result;
 }
+
+document.getElementById('startPreview').addEventListener('click', () => {
+    startPreview();
+});
+
+document.getElementById('startPreview').addEventListener('click', () => {
+    startPreview(processedOutput); // Usa los subtítulos generados
+});
+
+function parseLuaSubtitles(luaCode) {
+    const subtitleRegex = /createSubtitle\("([^"]+)", "([^"]+)", ([^,]+), ([^,]+), ([^,]+), ([^,]+)\)/g;
+    const subtitles = [];
+    let match;
+
+    while ((match = subtitleRegex.exec(luaCode)) !== null) {
+        const [_, id, text, startTime, duration, charSpacing, fadeOutInterval] = match;
+        subtitles.push({
+            id,
+            text,
+            startTime: parseFloat(startTime),
+            duration: parseFloat(duration),
+            charSpacing: parseFloat(charSpacing),
+            fadeOutInterval: parseFloat(fadeOutInterval),
+        });
+    }
+
+    return subtitles;
+}
+
+function startPreview(luaCode) {
+    const previewScreen = document.getElementById('preview-screen');
+    previewScreen.innerHTML = ''; // Limpia subtítulos anteriores
+
+    const subtitles = parseLuaSubtitles(luaCode);
+
+    subtitles.forEach((subtitle) => {
+        const subtitleElement = document.createElement('span');
+        subtitleElement.classList.add('subtitle');
+        subtitleElement.textContent = subtitle.text;
+
+        // Configuración inicial
+        subtitleElement.style.transform = `translate(0px, 0px) rotate(${Math.random() * 30 - 15}deg)`;
+        previewScreen.appendChild(subtitleElement);
+
+        // Aparecer subtítulo
+        setTimeout(() => {
+            subtitleElement.style.opacity = 1;
+            subtitleElement.style.transform = `translate(0px, 0px) rotate(0deg)`;
+        }, subtitle.startTime * 1000);
+
+        // Desaparecer subtítulo
+        setTimeout(() => {
+            subtitleElement.style.opacity = 0;
+            subtitleElement.style.transform = `translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 - 20}px) rotate(${Math.random() * 30 - 15}deg)`;
+        }, (subtitle.startTime + subtitle.duration) * 1000);
+
+        // Movimiento dinámico (Wavy)
+        if (subtitle.charSpacing > 0.01) {
+            setInterval(() => {
+                const offsetX = Math.sin(Date.now() / 200) * 10;
+                subtitleElement.style.transform = `translate(${offsetX}px, 0)`;
+            }, 50);
+        }
+    });
+}
