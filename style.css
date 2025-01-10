@@ -2,7 +2,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 20px;
     padding: 20px;
-    max-width: 1000px;
+    max-width: 1200px;
     line-height: 1.6;
   }
   
@@ -64,7 +64,7 @@ body {
   .preview-container {
     position: relative;
     width: 100%;
-    max-width: 800px;
+    max-width: 1200px;
     margin: 20px auto;
     text-align: center;
   }
@@ -82,7 +82,7 @@ body {
   
   .preview-screen span.subtitle {
     position: absolute;
-    bottom: 10%; /* Ajusta la posición vertical */
+    bottom: -10%; /* Ajusta la posición vertical */
     left: 50%; /* Posición inicial desde el centro */
     transform: translateX(-50%); /* Centra horizontalmente */
     width: auto; /* Asegúrate de que el ancho se ajuste al contenido */
