@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subtitle Processor</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+  <!-- Firma -->
+  <div class="signature">
+    <img src="https://i.postimg.cc/RZh57gyV/Discord-PFP.jpg" alt="Profile Picture" class="profile-pic">
+    <span class="name">NyxGleam</span>
+  </div>
+
+  <h1>Subtitle Processor</h1>
+  <form>
+    <input type="file" id="subtitleFile" accept=".vtt,.srt,.ass,.ssa,.txt">
+    <button type="button" id="processButton">Process</button>
+    <button type="button" id="copyButton">Copy Output</button>
+  </form>
+  <div class="output-container">
+    <pre><code id="output" class="language-lua"></code></pre>
+  </div>
+  <div class="preview-container">
+    <div id="preview-screen" class="preview-screen">
+      <!-- Los subtítulos aparecerán aquí -->
+    </div>
+    <button id="startPreview">Start Preview</button>
+  </div>
+  <div class="video-container">
+    <label for="youtubeLink">YouTube Video Link:</label>
+    <input type="text" id="youtubeLink" placeholder="Enter YouTube link">
+    <button id="loadVideo">Load Video</button>
+    <div id="player"></div>
+  </div>  
+  <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-lua.min.js"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+</body>
+</html>
