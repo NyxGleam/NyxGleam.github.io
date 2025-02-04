@@ -1,9 +1,11 @@
 // Lista de herramientas con sus nombres y rutas
 const tools = [
     { name: "🎬 Subtitle Processor", link: "subtitle-processor/" },
-    { name: "🔮 Magic Circle Generator", link: "magic-circle-generator/" },
-    { name: "🛠️ Another Tool", link: "another-tool/" } // Puedes agregar más aquí
+    { name: "🔮 Magic Circle Generator", link: "magic-circle-generator/" }
 ];
+
+//,
+//    { name: "🛠️ Another Tool", link: "another-tool/" }
 
 // Contenedor donde se agregarán los botones dinámicamente
 const toolsContainer = document.getElementById("tools-container");
