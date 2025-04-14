@@ -1,7 +1,8 @@
 // Lista de herramientas con sus nombres y rutas
 const tools = [
     { name: "🎬 Subtitle Processor", link: "subtitle-processor/" },
-    { name: "🔮 Magic Circle Generator", link: "magic-circle-generator/" }
+    { name: "🔮 Magic Circle Generator", link: "magic-circle-generator/" },
+    { name: "🤖 AI Chat Bot", link: "nyxchatbot/" }
 ];
 
 //,
