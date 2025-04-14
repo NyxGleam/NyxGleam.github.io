@@ -2,7 +2,7 @@
 const tools = [
     { name: "🎬 Subtitle Processor", link: "subtitle-processor/" },
     { name: "🔮 Magic Circle Generator", link: "magic-circle-generator/" },
-    { name: "🤖 AI Chat Bot", link: "nyxchatbot/" }
+    { name: "🤖 AI Chat Bot", link: "NyxChatBot/" }
 ];
 
 //,
